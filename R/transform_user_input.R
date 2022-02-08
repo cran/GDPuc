@@ -9,12 +9,12 @@ transform_user_input <- function(gdp, unit_in, unit_out, source, with_regions, r
 
   # Extract base years if they exist, and adjust string
   if (grepl("constant", unit_in)) {
-    base_x <- stringr::str_match(unit_in, "constant (....)")[, 2] %>% as.double()
+    base_x <- regmatches(unit_in, regexpr("[[:digit:]]{4}", unit_in)) %>% as.double()
     unit_in <- sub(base_x, "YYYY", unit_in) %>%
       paste0(" base x")
   }
   if (grepl("constant", unit_out)) {
-    base_y <- stringr::str_match(unit_out, "constant (....)")[, 2] %>% as.double()
+    base_y <- regmatches(unit_out, regexpr("[[:digit:]]{4}", unit_out)) %>% as.double()
     unit_out <- sub(base_y, "YYYY", unit_out) %>%
       paste0(" base y")
   }
@@ -39,19 +39,9 @@ transform_user_input <- function(gdp, unit_in, unit_out, source, with_regions, r
     gdp <- dplyr::rename(gdp, "year" = !!rlang::sym(i_year))
   }
 
-  # Evaluate source
-  q <- source
-  q_expr <- rlang::quo_get_expr(q)
-  q_env <- rlang::quo_get_env(q)
-  source_name <- as.character(q_expr)
-  if (is.character(q_expr)) {
-    q <- rlang::quo_set_expr(q, rlang::sym(q_expr))
-  }
-  if (!exists(source_name, q_env)) {
-    q <- rlang::quo_set_env(q, rlang::current_env())
-  }
-  source <- rlang::eval_tidy(q)
-
+  # Evaluate source (same steps as performed in check_source)
+  source_name <- if (is.character(source)) source else "user_provided"
+  source <- check_source(source)
 
   # If a region mapping is available and a region code (that isn't a
   # country-region) is detected, replace the region with the countries it
@@ -64,30 +54,35 @@ transform_user_input <- function(gdp, unit_in, unit_out, source, with_regions, r
   # Need this to check for existence of base_y and base_x
   this_e <- environment()
 
-  # Use different source if required
-  if (!is.null(replace_NAs) && replace_NAs != 0) {
-    b <- if (exists("base_y", envir = this_e, inherits = FALSE)) base_y else NULL
-    source <- adapt_source(gdp, base_y = b, source, with_regions, replace_NAs)
-    source_name <- paste0(source_name, "_adapted")
+  # Check that base_y and base_x years exist in the source
+  if (exists("base_y", envir = this_e, inherits = FALSE) && !base_y %in% source$year) {
+    abort("No information in source {crayon::bold(source_name)} for year {base_y} in 'unit_out'.")
   }
-
-  # Check availability of required conversion factors in source
+  if (exists("base_x", envir = this_e, inherits = FALSE) && !base_x %in% source$year) {
+    abort("No information in source {crayon::bold(source_name)} for year {base_x} in 'unit_in'.")
+  }
+  # Check general overlap
   if (length(intersect(unique(gdp$year), unique(source$year))) == 0) {
     abort("No information in source {crayon::bold(source_name)} for years in 'gdp'.")
   }
+
+  # Use different source if required
+  if (!is.null(replace_NAs) && replace_NAs != 0) {
+    source <- adapt_source(gdp, source, with_regions, replace_NAs)
+    source_name <- paste0(source_name, "_adapted")
+  }
+
   if (length(intersect(unique(gdp$iso3c), unique(source$iso3c))) == 0) {
     abort("No information in source {crayon::bold(source_name)} for countries in 'gdp'.")
   }
 
-  out <- list("gdp" = gdp,
-              "unit_in" = unit_in,
-              "unit_out" = unit_out,
-              "source" = source,
-              "source_name" = source_name) %>%
+  list("gdp" = gdp,
+       "unit_in" = unit_in,
+       "unit_out" = unit_out,
+       "source" = source,
+       "source_name" = source_name) %>%
     {if (exists("base_x", envir = this_e, inherits = FALSE)) c(., "base_x" = base_x) else .} %>%
     {if (exists("base_y", envir = this_e, inherits = FALSE)) c(., "base_y" = base_y) else .}
-
-  return(out)
 }
 
 
