@@ -1,6 +1,6 @@
 Package: GDPuc
 Title: Easily Convert GDP Data
-Version: 0.7.0
+Version: 0.8.0
 Authors@R: 
     c(person(given = "Johannes",
              family = "Koch",
@@ -23,11 +23,11 @@ Suggests: covr, knitr, magclass, purrr, readxl, rmarkdown, stringr,
         testthat (>= 3.0.0), tidyr, WDI, zoo
 Config/testthat/edition: 3
 Encoding: UTF-8
-Date: 2022-02-08
+Date: 2022-02-15
 VignetteBuilder: knitr
 NeedsCompilation: no
-Packaged: 2022-02-08 17:22:32 UTC; johannes
+Packaged: 2022-02-15 15:30:51 UTC; johannes
 Author: Johannes Koch [aut, cre]
 Maintainer: Johannes Koch <jokoch@pik-potsdam.de>
 Repository: CRAN
-Date/Publication: 2022-02-08 17:30:02 UTC
+Date/Publication: 2022-02-15 15:50:02 UTC

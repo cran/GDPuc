@@ -53,6 +53,24 @@ x <- convertGDP(
   gdp = my_gdp, 
   unit_in = "constant 2005 Int$PPP", 
   unit_out = "constant 2019 Int$PPP",
+  replace_NAs = "no_conversion",
+  return_cfs = TRUE
+)
+x$result
+
+x$cfs
+
+## -----------------------------------------------------------------------------
+my_gdp <- tibble::tibble(
+  iso3c = "ABW", 
+  year = 2010:2014, 
+  value = 100:104
+)
+
+x <- convertGDP(
+  gdp = my_gdp, 
+  unit_in = "constant 2005 Int$PPP", 
+  unit_out = "constant 2019 Int$PPP",
   replace_NAs = "linear",
   return_cfs = TRUE
 )
@@ -104,7 +122,7 @@ x <- convertGDP(
   gdp = my_gdp, 
   unit_in = "constant 2005 Int$PPP", 
   unit_out = "constant 2019 Int$PPP",
-  replace_NAs = "linear_regional_average",
+  replace_NAs = c("linear", 0),
   with_regions = my_mapping_data_frame,
   return_cfs = TRUE
 )
