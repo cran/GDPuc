@@ -25,6 +25,14 @@ x$result
 x$cfs
 
 ## -----------------------------------------------------------------------------
+x <- convertGDP(
+  gdp = my_gdp, 
+  unit_in = "constant 2005 Int$PPP", 
+  unit_out = "constant 2019 Int$PPP",
+  replace_NAs = NA
+)
+
+## -----------------------------------------------------------------------------
 my_gdp <- tibble::tibble(
   iso3c = "ABW", 
   year = 2010:2014, 
