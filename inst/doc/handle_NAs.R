@@ -9,14 +9,14 @@ library(GDPuc)
 
 # Test with Aruba -> iso3c = ABW
 my_gdp <- tibble::tibble(
-  iso3c = c("ABW"), 
-  year = 2010:2014, 
+  iso3c = c("ABW"),
+  year = 2010:2014,
   value = 100:104
 )
 
 x <- convertGDP(
-  gdp = my_gdp, 
-  unit_in = "constant 2005 Int$PPP", 
+  gdp = my_gdp,
+  unit_in = "constant 2005 Int$PPP",
   unit_out = "constant 2019 Int$PPP",
   return_cfs = TRUE
 )
@@ -34,14 +34,14 @@ x <- convertGDP(
 
 ## -----------------------------------------------------------------------------
 my_gdp <- tibble::tibble(
-  iso3c = "ABW", 
-  year = 2010:2014, 
+  iso3c = "ABW",
+  year = 2010:2014,
   value = 100:104
 )
 
 x <- convertGDP(
-  gdp = my_gdp, 
-  unit_in = "constant 2005 Int$PPP", 
+  gdp = my_gdp,
+  unit_in = "constant 2005 Int$PPP",
   unit_out = "constant 2019 Int$PPP",
   replace_NAs = 0,
   return_cfs = TRUE
@@ -52,14 +52,14 @@ x$cfs
 
 ## -----------------------------------------------------------------------------
 my_gdp <- tibble::tibble(
-  iso3c = "ABW", 
-  year = 2010:2014, 
+  iso3c = "ABW",
+  year = 2010:2014,
   value = 100:104
 )
 
 x <- convertGDP(
-  gdp = my_gdp, 
-  unit_in = "constant 2005 Int$PPP", 
+  gdp = my_gdp,
+  unit_in = "constant 2005 Int$PPP",
   unit_out = "constant 2019 Int$PPP",
   replace_NAs = "no_conversion",
   return_cfs = TRUE
@@ -70,14 +70,14 @@ x$cfs
 
 ## -----------------------------------------------------------------------------
 my_gdp <- tibble::tibble(
-  iso3c = "ABW", 
-  year = 2010:2014, 
+  iso3c = "ABW",
+  year = 2010:2014,
   value = 100:104
 )
 
 x <- convertGDP(
-  gdp = my_gdp, 
-  unit_in = "constant 2005 Int$PPP", 
+  gdp = my_gdp,
+  unit_in = "constant 2005 Int$PPP",
   unit_out = "constant 2019 Int$PPP",
   replace_NAs = "linear",
   return_cfs = TRUE
@@ -88,19 +88,19 @@ x$cfs
 
 ## -----------------------------------------------------------------------------
 my_gdp <- tibble::tibble(
-  iso3c = "ABW", 
-  year = 2010:2014, 
+  iso3c = "ABW",
+  year = 2010:2014,
   value = 100:104
 )
 
 my_mapping_data_frame <- tibble::tibble(
-  iso3c = c("ABW", "BRA", "ARG", "COL"), 
+  iso3c = c("ABW", "BRA", "ARG", "COL"),
   region = "LAM"
 )
 
 x <- convertGDP(
-  gdp = my_gdp, 
-  unit_in = "constant 2005 Int$PPP", 
+  gdp = my_gdp,
+  unit_in = "constant 2005 Int$PPP",
   unit_out = "constant 2019 Int$PPP",
   replace_NAs = "regional_average",
   with_regions = my_mapping_data_frame,
@@ -116,19 +116,19 @@ x$cfs
 ## -----------------------------------------------------------------------------
 # Create an imaginary country XXX, and add it to the Latin America region
 my_gdp <- tibble::tibble(
-  iso3c = c("ABW", "XXX"), 
-  year = 2010, 
+  iso3c = c("ABW", "XXX"),
+  year = 2010,
   value = 100
 )
 
 my_mapping_data_frame <- tibble::tibble(
-  iso3c = c("ABW", "BRA", "ARG", "COL", "XXX"), 
+  iso3c = c("ABW", "BRA", "ARG", "COL", "XXX"),
   region = "LAM"
 )
 
 x <- convertGDP(
-  gdp = my_gdp, 
-  unit_in = "constant 2005 Int$PPP", 
+  gdp = my_gdp,
+  unit_in = "constant 2005 Int$PPP",
   unit_out = "constant 2019 Int$PPP",
   replace_NAs = c("linear", 0),
   with_regions = my_mapping_data_frame,
@@ -140,14 +140,14 @@ x$cfs
 
 ## -----------------------------------------------------------------------------
 my_gdp <- tibble::tibble(
-  iso3c = "ABW", 
-  year = 2010:2014, 
+  iso3c = "ABW",
+  year = 2010:2014,
   value = 100:104
 )
 
 x <- convertGDP(
-  gdp = my_gdp, 
-  unit_in = "constant 2005 Int$PPP", 
+  gdp = my_gdp,
+  unit_in = "constant 2005 Int$PPP",
   unit_out = "constant 2019 Int$PPP",
   replace_NAs = 1,
   return_cfs = TRUE
