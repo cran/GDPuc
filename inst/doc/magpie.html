@@ -342,36 +342,30 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 <p><code>convertGDP</code> also accepts a magpie object (see the <a href="https://github.com/pik-piam/magclass">magclass</a> package) for
 the <code>gdp</code> argument.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(GDPuc)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>my_gdp <span class="ot">&lt;-</span> magclass<span class="sc">::</span><span class="fu">new.magpie</span>(</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">cells_and_regions =</span> <span class="fu">c</span>(<span class="st">&quot;USA&quot;</span>, <span class="st">&quot;FRA&quot;</span>), </span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">years =</span> <span class="dv">2010</span><span class="sc">:</span><span class="dv">2014</span>, </span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">names =</span> <span class="st">&quot;gdp&quot;</span>,</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">sets =</span> <span class="fu">c</span>(<span class="st">&quot;iso3c&quot;</span>, <span class="st">&quot;year&quot;</span>, <span class="st">&quot;data&quot;</span>),</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">fill =</span> <span class="dv">100</span><span class="sc">:</span><span class="dv">109</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>my_gdp</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; An object of class &quot;magpie&quot;</span></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; , , data = gdp</span></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      year</span></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; iso3c y2010 y2011 y2012 y2013 y2014</span></span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   USA   100   102   104   106   108</span></span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   FRA   101   103   105   107   109</span></span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="fu">convertGDP</span>(</span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>  <span class="at">gdp =</span> my_gdp, </span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>  <span class="at">unit_in =</span> <span class="st">&quot;constant 2005 LCU&quot;</span>, </span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>  <span class="at">unit_out =</span> <span class="st">&quot;constant 2017 Int$PPP&quot;</span></span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; An object of class &quot;magpie&quot;</span></span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; , , data = gdp</span></span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;      year</span></span>
-<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; iso3c    y2010    y2011    y2012    y2013    y2014</span></span>
-<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   USA 123.2084 125.6726 128.1367 130.6009 133.0651</span></span>
-<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt;   FRA 150.4810 153.4608 156.4406 159.4204 162.4002</span></span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(GDPuc)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="cf">if</span> (rlang<span class="sc">::</span><span class="fu">is_installed</span>(<span class="st">&quot;magclass&quot;</span>)) {</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>  my_gdp <span class="ot">&lt;-</span> magclass<span class="sc">::</span><span class="fu">new.magpie</span>(</span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>    <span class="at">cells_and_regions =</span> <span class="fu">c</span>(<span class="st">&quot;USA&quot;</span>, <span class="st">&quot;FRA&quot;</span>), </span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>    <span class="at">years =</span> <span class="dv">2010</span><span class="sc">:</span><span class="dv">2014</span>, </span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>    <span class="at">names =</span> <span class="st">&quot;gdp&quot;</span>,</span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>    <span class="at">sets =</span> <span class="fu">c</span>(<span class="st">&quot;iso3c&quot;</span>, <span class="st">&quot;year&quot;</span>, <span class="st">&quot;data&quot;</span>),</span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a>    <span class="at">fill =</span> <span class="dv">100</span><span class="sc">:</span><span class="dv">109</span></span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a>  )</span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a>  my_gdp</span>
+<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a>  </span>
+<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a>  <span class="fu">convertGDP</span>(</span>
+<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a>    <span class="at">gdp =</span> my_gdp, </span>
+<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a>    <span class="at">unit_in =</span> <span class="st">&quot;constant 2005 LCU&quot;</span>, </span>
+<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a>    <span class="at">unit_out =</span> <span class="st">&quot;constant 2017 Int$PPP&quot;</span></span>
+<span id="cb1-16"><a href="#cb1-16" tabindex="-1"></a>  )</span>
+<span id="cb1-17"><a href="#cb1-17" tabindex="-1"></a>}</span>
+<span id="cb1-18"><a href="#cb1-18" tabindex="-1"></a><span class="co">#&gt; An object of class &quot;magpie&quot;</span></span>
+<span id="cb1-19"><a href="#cb1-19" tabindex="-1"></a><span class="co">#&gt; , , data = gdp</span></span>
+<span id="cb1-20"><a href="#cb1-20" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb1-21"><a href="#cb1-21" tabindex="-1"></a><span class="co">#&gt;      year</span></span>
+<span id="cb1-22"><a href="#cb1-22" tabindex="-1"></a><span class="co">#&gt; iso3c    y2010    y2011    y2012    y2013    y2014</span></span>
+<span id="cb1-23"><a href="#cb1-23" tabindex="-1"></a><span class="co">#&gt;   USA 123.2084 125.6726 128.1367 130.6009 133.0651</span></span>
+<span id="cb1-24"><a href="#cb1-24" tabindex="-1"></a><span class="co">#&gt;   FRA 150.4810 153.4608 156.4406 159.4204 162.4002</span></span></code></pre></div>
 <p><code>convertGDP</code> does not change or add the “unit” attribute
 of the magpie object.</p>
 
