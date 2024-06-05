@@ -1,4 +1,4 @@
-## ---- include = FALSE---------------------------------------------------------
+## ----include = FALSE----------------------------------------------------------
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
@@ -7,9 +7,9 @@ knitr::opts_chunk$set(
 ## -----------------------------------------------------------------------------
 library(GDPuc)
 
-# Test with Aruba -> iso3c = ABW
+# Test with Venezuela -> iso3c = VEN
 my_gdp <- tibble::tibble(
-  iso3c = c("ABW"),
+  iso3c = c("VEN"),
   year = 2010:2014,
   value = 100:104
 )
@@ -34,7 +34,7 @@ x <- convertGDP(
 
 ## -----------------------------------------------------------------------------
 my_gdp <- tibble::tibble(
-  iso3c = "ABW",
+  iso3c = "VEN",
   year = 2010:2014,
   value = 100:104
 )
@@ -52,7 +52,7 @@ x$cfs
 
 ## -----------------------------------------------------------------------------
 my_gdp <- tibble::tibble(
-  iso3c = "ABW",
+  iso3c = "VEN",
   year = 2010:2014,
   value = 100:104
 )
@@ -70,7 +70,7 @@ x$cfs
 
 ## -----------------------------------------------------------------------------
 my_gdp <- tibble::tibble(
-  iso3c = "ABW",
+  iso3c = "VEN",
   year = 2010:2014,
   value = 100:104
 )
@@ -88,13 +88,13 @@ x$cfs
 
 ## -----------------------------------------------------------------------------
 my_gdp <- tibble::tibble(
-  iso3c = "ABW",
+  iso3c = "VEN",
   year = 2010:2014,
   value = 100:104
 )
 
 my_mapping_data_frame <- tibble::tibble(
-  iso3c = c("ABW", "BRA", "ARG", "COL"),
+  iso3c = c("VEN", "BRA", "ARG", "COL"),
   region = "LAM"
 )
 
@@ -116,13 +116,13 @@ x$cfs
 ## -----------------------------------------------------------------------------
 # Create an imaginary country XXX, and add it to the Latin America region
 my_gdp <- tibble::tibble(
-  iso3c = c("ABW", "XXX"),
+  iso3c = c("VEN", "XXX"),
   year = 2010,
   value = 100
 )
 
 my_mapping_data_frame <- tibble::tibble(
-  iso3c = c("ABW", "BRA", "ARG", "COL", "XXX"),
+  iso3c = c("VEN", "BRA", "ARG", "COL", "XXX"),
   region = "LAM"
 )
 
@@ -140,7 +140,7 @@ x$cfs
 
 ## -----------------------------------------------------------------------------
 my_gdp <- tibble::tibble(
-  iso3c = "ABW",
+  iso3c = "VEN",
   year = 2010:2014,
   value = 100:104
 )
@@ -156,7 +156,7 @@ x$result
 
 x$cfs
 
-# Why is the deflator above not 1? That is because for ABW, only the deflator value in 2019 was set to 1. 
+# Why is the deflator above not 1? That is because for VEN, only the deflator value in 2019 was set to 1. 
 # In 2005 the deflator was in the order of magnitude of 100. Obviously setting the deflator to 1 in 2019 is 
 # completely misleading.
 
