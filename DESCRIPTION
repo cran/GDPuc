@@ -1,7 +1,7 @@
 Package: GDPuc
 Title: Easily Convert GDP Data
-Version: 1.0.0
-Date: 2024-06-5
+Version: 1.0.4
+Date: 2024-08-05
 Authors@R: 
     person("Johannes", "Koch", , "jokoch@pik-potsdam.de", role = c("aut", "cre"))
 Description: Convert GDP time series data from one unit to
@@ -20,10 +20,10 @@ Suggests: covr, knitr, magclass, purrr, rmarkdown, stringr, testthat
 VignetteBuilder: knitr
 Config/testthat/edition: 3
 Encoding: UTF-8
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.2
 NeedsCompilation: no
-Packaged: 2024-06-05 15:46:19 UTC; johannes
+Packaged: 2024-08-05 09:43:57 UTC; johannes
 Author: Johannes Koch [aut, cre]
 Maintainer: Johannes Koch <jokoch@pik-potsdam.de>
 Repository: CRAN
-Date/Publication: 2024-06-05 17:00:14 UTC
+Date/Publication: 2024-09-04 08:50:02 UTC
