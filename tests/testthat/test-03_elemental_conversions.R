@@ -164,6 +164,43 @@ test_that("current_USMER_2_current_LCU", {
   }
 })
 
+test_that("current_xCU_2_current_USMER", {
+  gdp <- wb_wdi %>%
+    dplyr::filter(!is.na(`GDP (current LCU)`), !is.na(`GDP (current US$)`)) %>%
+    dplyr::select("iso3c", "year", "value" = `GDP (current LCU)`)
+
+  for (country in unique(gdp$iso3c)) {
+    gdp_in <- dplyr::filter(gdp, .data$iso3c == country)
+
+    gdp_conv <- current_xCU_2_current_USMER(gdp_in, country, wb_wdi) %>%
+      dplyr::filter(!is.na(value))
+
+    gdp_out <- current_LCU_2_current_USMER(gdp_in, wb_wdi) %>%
+      dplyr::filter(!is.na(value))
+
+    expect_equal(gdp_conv, gdp_out, label = country)
+  }
+})
+
+test_that("current_USMER_2_current_xCU", {
+  gdp <- wb_wdi %>%
+    dplyr::filter(!is.na(`GDP (current LCU)`), !is.na(`GDP (current US$)`)) %>%
+    dplyr::select("iso3c", "year", "value" = `GDP (current US$)`)
+
+  for (country in unique(gdp$iso3c)) {
+    gdp_in <- dplyr::filter(gdp, .data$iso3c == country)
+
+    gdp_conv <- current_USMER_2_current_xCU(gdp_in, country, wb_wdi) %>%
+      dplyr::filter(!is.na(value))
+
+    gdp_out <- wb_wdi %>%
+      dplyr::filter(!is.na(`GDP (current LCU)`), !is.na(`GDP (current US$)`), .data$iso3c == country) %>%
+      dplyr::select("iso3c", "year", "value" = `GDP (current LCU)`)
+
+    expect_equal(gdp_conv, gdp_out, label = country)
+  }
+})
+
 #------------------------------------------------------------
 #------------------------------------------------------------
 #------------------------------------------------------------
@@ -293,29 +330,28 @@ test_that("constant_USMER_2_constant_LCU", {
   }
 })
 
-test_that("constant_USMER_2_constant_EURO", {
+test_that("constant_USMER_2_constant_xCU", {
   country_base_years <- wb_wdi %>%
     dplyr::filter(`GDP deflator (base year varies by country)` == 100) %>%
     dplyr::select("iso3c", "year")
 
   my_countries <- country_base_years %>%
-    dplyr::filter(year == year_USMER, iso3c %in% euro_countries) %>%
+    dplyr::filter(year == year_USMER) %>%
     dplyr::pull(iso3c)
 
-  gdp_in <- wb_wdi %>%
-    dplyr::filter(iso3c %in% my_countries, !is.na(`GDP (constant LCU)`)) %>%
-    dplyr::select("iso3c", "year", "value" = tidyselect::matches(regex_var_USMER))
+  for (country in my_countries) {
+    gdp_in <- wb_wdi %>%
+      dplyr::filter(iso3c  == country, !is.na(`GDP (constant LCU)`)) %>%
+      dplyr::select("iso3c", "year", "value" = tidyselect::matches(regex_var_USMER))
 
-  gdp_conv <- constant_USMER_2_constant_EURO(gdp_in, year_USMER, wb_wdi) %>%
-    dplyr::filter(!is.na(value))
+    gdp_conv <- constant_USMER_2_constant_xCU(gdp_in, country, year_USMER, wb_wdi) %>%
+      dplyr::filter(!is.na(value))
 
-  gdp_out <- constant_USMER_2_constant_LCU(gdp_in, year_USMER, wb_wdi) %>%
-    dplyr::filter(!is.na(value))
+    gdp_out <- wb_wdi %>%
+      dplyr::right_join(gdp_conv, by = c("iso3c", "year")) %>%
+      dplyr::select("iso3c", "year", "value" = `GDP (constant LCU)`)
 
-  for (country in unique(gdp_conv$iso3c)) {
-    expect_equal(gdp_conv %>% dplyr::filter(iso3c == country),
-                 gdp_out %>% dplyr::filter(iso3c == country),
-                 label = country)
+    expect_equal(gdp_conv, gdp_out, label = country)
   }
 })
 
@@ -323,31 +359,29 @@ test_that("constant_USMER_2_constant_EURO", {
 #------------------------------------------------------------
 #------------------------------------------------------------
 #------------------------------------------------------------
-# Unit_in = constant_EURO
+# Unit_in = constant_xCU
 
-test_that("constant_EURO_2_constant_USMER", {
+test_that("constant_xCU_2_constant_USMER", {
   country_base_years <- wb_wdi %>%
     dplyr::filter(`GDP deflator (base year varies by country)` == 100) %>%
     dplyr::select("iso3c", "year")
 
   my_countries <- country_base_years %>%
-    dplyr::filter(year == year_USMER, iso3c %in% euro_countries) %>%
+    dplyr::filter(year == year_USMER) %>%
     dplyr::pull(iso3c)
 
-  gdp_in <- wb_wdi %>%
-    dplyr::filter(iso3c %in% my_countries,
-                  !is.na(`GDP (constant LCU)`)) %>%
-    dplyr::select("iso3c", "year", "value" = tidyselect::matches(regex_var_USMER))
+  for (country in my_countries) {
+    gdp_in <- wb_wdi %>%
+      dplyr::filter(iso3c == country,
+                    !is.na(`GDP (constant LCU)`)) %>%
+      dplyr::select("iso3c", "year", "value" = tidyselect::matches(regex_var_USMER))
 
-  gdp_conv <- constant_EURO_2_constant_USMER(gdp_in, year_USMER, wb_wdi) %>%
-    dplyr::filter(!is.na(value))
+    gdp_conv <- constant_xCU_2_constant_USMER(gdp_in, country, year_USMER, wb_wdi) %>%
+      dplyr::filter(!is.na(value))
 
-  gdp_out <- constant_LCU_2_constant_USMER(gdp_in, year_USMER, wb_wdi) %>%
-    dplyr::filter(!is.na(value))
+    gdp_out <- constant_LCU_2_constant_USMER(gdp_in, year_USMER, wb_wdi) %>%
+      dplyr::filter(!is.na(value))
 
-  for (country in unique(gdp_conv$iso3c)) {
-    expect_equal(gdp_conv %>% dplyr::filter(iso3c == country),
-                 gdp_out %>% dplyr::filter(iso3c == country),
-                 label = country)
+    expect_equal(gdp_conv, gdp_out, label = country)
   }
 })

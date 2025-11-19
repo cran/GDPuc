@@ -1,7 +1,8 @@
 ## ----include = FALSE----------------------------------------------------------
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  eval = rlang::is_installed("zoo")
 )
 
 ## -----------------------------------------------------------------------------
@@ -139,24 +140,20 @@ x$result
 x$cfs
 
 ## -----------------------------------------------------------------------------
+# Venezuela is only missing conversion factors in 2019, AIA has no conversion factors at all.
 my_gdp <- tibble::tibble(
-  iso3c = "VEN",
-  year = 2010:2014,
-  value = 100:104
+  iso3c = c("VEN", "AIA", "USA"),
+  value = 100
 )
 
 x <- convertGDP(
   gdp = my_gdp,
   unit_in = "constant 2005 Int$PPP",
   unit_out = "constant 2019 Int$PPP",
-  replace_NAs = 1,
+  replace_NAs = "with_USA",
   return_cfs = TRUE
 )
 x$result
 
 x$cfs
-
-# Why is the deflator above not 1? That is because for VEN, only the deflator value in 2019 was set to 1. 
-# In 2005 the deflator was in the order of magnitude of 100. Obviously setting the deflator to 1 in 2019 is 
-# completely misleading.
 

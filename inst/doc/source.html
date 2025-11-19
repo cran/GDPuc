@@ -60,7 +60,7 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
 { counter-reset: source-line 0; }
@@ -344,11 +344,80 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <h2>The <code>source</code> argument</h2>
 <p>Use the <code>source</code> argument in <code>convertGDP</code> to
 control the source of the underlying conversion factors (GDP deflators,
-MERs and PPPs). This can be a user-defined object or one of the sources
-shipped with the package.</p>
+MERs and PPPs). This can be one of the sources shipped with the package
+or a user-defined object.</p>
+<div id="package-internal-sources" class="section level3">
+<h3>Package internal ‘sources’</h3>
+<p>There are two <code>source</code> options shipped with the package,
+<code>wb_wdi</code> and <code>wb_wdi_linked</code>, <strong>with
+<code>wb_wdi</code> set as the default</strong>. Pass the name of a
+shipped source to the source argument to use it.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(GDPuc)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>my_gdp <span class="ot">&lt;-</span> tibble<span class="sc">::</span><span class="fu">tibble</span>(</span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>  <span class="at">iso3c =</span> <span class="st">&quot;USA&quot;</span>, </span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>  <span class="at">year =</span> <span class="dv">2010</span><span class="sc">:</span><span class="dv">2014</span>, </span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>  <span class="at">value =</span> <span class="dv">100</span><span class="sc">:</span><span class="dv">104</span></span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>)</span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a><span class="fu">convertGDP</span>(</span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a>  <span class="at">gdp =</span> my_gdp, </span>
+<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a>  <span class="at">unit_in =</span> <span class="st">&quot;constant 2010 LCU&quot;</span>, </span>
+<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a>  <span class="at">unit_out =</span> <span class="st">&quot;constant 2014 Int$PPP&quot;</span>,</span>
+<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a>  <span class="at">source =</span> <span class="st">&quot;wb_wdi_linked&quot;</span>,</span>
+<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a>  <span class="at">verbose =</span> <span class="cn">TRUE</span></span>
+<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a>)</span>
+<span id="cb1-16"><a href="#cb1-16" tabindex="-1"></a><span class="co">#&gt; ℹ Converting GDP with conversion factors from wb_wdi_linked:</span></span>
+<span id="cb1-17"><a href="#cb1-17" tabindex="-1"></a><span class="co">#&gt; constant 2010 LCU → constant 2014 LCU</span></span>
+<span id="cb1-18"><a href="#cb1-18" tabindex="-1"></a><span class="co">#&gt; 2014 value of base 2010 GDP deflator in (constant 2014 LCU per constant 2010</span></span>
+<span id="cb1-19"><a href="#cb1-19" tabindex="-1"></a><span class="co">#&gt; LCU) used:</span></span>
+<span id="cb1-20"><a href="#cb1-20" tabindex="-1"></a><span class="co">#&gt; USA: 1.07786</span></span>
+<span id="cb1-21"><a href="#cb1-21" tabindex="-1"></a><span class="co">#&gt; constant 2014 LCU → constant 2014 Int$PPP</span></span>
+<span id="cb1-22"><a href="#cb1-22" tabindex="-1"></a><span class="co">#&gt; 2014 PPP conversion factor in (LCU per international $) used:</span></span>
+<span id="cb1-23"><a href="#cb1-23" tabindex="-1"></a><span class="co">#&gt; USA: 1</span></span>
+<span id="cb1-24"><a href="#cb1-24" tabindex="-1"></a><span class="co">#&gt; # A tibble: 5 × 3</span></span>
+<span id="cb1-25"><a href="#cb1-25" tabindex="-1"></a><span class="co">#&gt;   iso3c  year value</span></span>
+<span id="cb1-26"><a href="#cb1-26" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt; &lt;int&gt; &lt;dbl&gt;</span></span>
+<span id="cb1-27"><a href="#cb1-27" tabindex="-1"></a><span class="co">#&gt; 1 USA    2010  108.</span></span>
+<span id="cb1-28"><a href="#cb1-28" tabindex="-1"></a><span class="co">#&gt; 2 USA    2011  109.</span></span>
+<span id="cb1-29"><a href="#cb1-29" tabindex="-1"></a><span class="co">#&gt; 3 USA    2012  110.</span></span>
+<span id="cb1-30"><a href="#cb1-30" tabindex="-1"></a><span class="co">#&gt; 4 USA    2013  111.</span></span>
+<span id="cb1-31"><a href="#cb1-31" tabindex="-1"></a><span class="co">#&gt; 5 USA    2014  112.</span></span></code></pre></div>
+<p>Use the function <code>print_source_info</code> to print information
+on a specific, or all available sources.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">print_source_info</span>(<span class="st">&quot;wb_wdi&quot;</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="co">#&gt; ── wb_wdi ──────────────────────────────────────────────────────────────────────</span></span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="co">#&gt; → Origin: The World Bank&#39;s World Development Indicator Database</span></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a><span class="co">#&gt; → Date: Downloaded on the 30th of April 2024</span></span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a><span class="co">#&gt; → Html: https://databank.worldbank.org/source/world-development-indicators</span></span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a><span class="co">#&gt; → Note: Uses the GDP deflator.</span></span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a><span class="co">#&gt; ────────────────────────────────────────────────────────────────────────────────</span></span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a><span class="fu">print_source_info</span>()</span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a><span class="co">#&gt; ℹ Sources available:</span></span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a><span class="co">#&gt; ── wb_wdi ──────────────────────────────────────────────────────────────────────</span></span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a><span class="co">#&gt; → Origin: The World Bank&#39;s World Development Indicator Database</span></span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a><span class="co">#&gt; → Date: Downloaded on the 30th of April 2024</span></span>
+<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a><span class="co">#&gt; → Html: https://databank.worldbank.org/source/world-development-indicators</span></span>
+<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a><span class="co">#&gt; → Note: Uses the GDP deflator.</span></span>
+<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a><span class="co">#&gt; ────────────────────────────────────────────────────────────────────────────────</span></span>
+<span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a><span class="co">#&gt; ── wb_wdi_linked ───────────────────────────────────────────────────────────────</span></span>
+<span id="cb2-17"><a href="#cb2-17" tabindex="-1"></a><span class="co">#&gt; → Origin: The World Bank&#39;s World Development Indicator Database</span></span>
+<span id="cb2-18"><a href="#cb2-18" tabindex="-1"></a><span class="co">#&gt; → Date: Downloaded on the 30th of April 2024</span></span>
+<span id="cb2-19"><a href="#cb2-19" tabindex="-1"></a><span class="co">#&gt; → Html: https://databank.worldbank.org/source/world-development-indicators</span></span>
+<span id="cb2-20"><a href="#cb2-20" tabindex="-1"></a><span class="co">#&gt; → Note: Uses the linked GDP deflator.</span></span>
+<span id="cb2-21"><a href="#cb2-21" tabindex="-1"></a><span class="co">#&gt; ────────────────────────────────────────────────────────────────────────────────</span></span>
+<span id="cb2-22"><a href="#cb2-22" tabindex="-1"></a><span class="co">#&gt; ── wb_wdi_cpi ──────────────────────────────────────────────────────────────────</span></span>
+<span id="cb2-23"><a href="#cb2-23" tabindex="-1"></a><span class="co">#&gt; → Origin: The World Bank&#39;s World Development Indicator Database</span></span>
+<span id="cb2-24"><a href="#cb2-24" tabindex="-1"></a><span class="co">#&gt; → Date: Downloaded on the 30th of April 2024</span></span>
+<span id="cb2-25"><a href="#cb2-25" tabindex="-1"></a><span class="co">#&gt; → Html: https://databank.worldbank.org/source/world-development-indicators</span></span>
+<span id="cb2-26"><a href="#cb2-26" tabindex="-1"></a><span class="co">#&gt; → Note: Uses the CPI as deflator.</span></span>
+<span id="cb2-27"><a href="#cb2-27" tabindex="-1"></a><span class="co">#&gt; ────────────────────────────────────────────────────────────────────────────────</span></span></code></pre></div>
+<p>Use the <code>:::</code> operator to take a closer look at sources
+shipped with GDPuc.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>GDPuc<span class="sc">:::</span>wb_wdi</span></code></pre></div>
 </div>
-<div id="user-defined-source-objects" class="section level2">
-<h2>User-defined ‘source’ objects</h2>
+<div id="user-defined-source-objects" class="section level3">
+<h3>User-defined ‘source’ objects</h3>
 <p>Any tibble with columns:</p>
 <ul>
 <li>“iso3c” (character),</li>
@@ -359,117 +428,115 @@ shipped with the package.</p>
 (numeric)</li>
 </ul>
 <p>can be used as a source of conversion factors.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(GDPuc)</span>
-<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a></span>
-<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>my_gdp <span class="ot">&lt;-</span> tibble<span class="sc">::</span><span class="fu">tibble</span>(</span>
-<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>  <span class="at">iso3c =</span> <span class="st">&quot;USA&quot;</span>, </span>
-<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>  <span class="at">year =</span> <span class="dv">2010</span><span class="sc">:</span><span class="dv">2014</span>, </span>
-<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>  <span class="at">value =</span> <span class="dv">100</span><span class="sc">:</span><span class="dv">104</span></span>
-<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>)</span>
-<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a></span>
-<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a>my_custom_source <span class="ot">&lt;-</span> tibble<span class="sc">::</span><span class="fu">tibble</span>(</span>
-<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a>  <span class="at">iso3c =</span> <span class="st">&quot;USA&quot;</span>, </span>
-<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a>  <span class="at">year =</span> <span class="dv">2010</span><span class="sc">:</span><span class="dv">2014</span>, </span>
-<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a>  <span class="st">&quot;GDP deflator&quot;</span> <span class="ot">=</span> <span class="fu">seq</span>(<span class="dv">1</span>, <span class="fl">1.1</span>, <span class="fl">0.025</span>),</span>
-<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a>  <span class="st">&quot;MER (LCU per US$)&quot;</span> <span class="ot">=</span> <span class="dv">1</span>,</span>
-<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a>  <span class="st">&quot;PPP conversion factor, GDP (LCU per international $)&quot;</span> <span class="ot">=</span> <span class="dv">1</span>,</span>
-<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a>)</span>
-<span id="cb1-16"><a href="#cb1-16" tabindex="-1"></a><span class="fu">print</span>(my_custom_source)</span>
-<span id="cb1-17"><a href="#cb1-17" tabindex="-1"></a><span class="co">#&gt; # A tibble: 5 × 5</span></span>
-<span id="cb1-18"><a href="#cb1-18" tabindex="-1"></a><span class="co">#&gt;   iso3c  year `GDP deflator` `MER (LCU per US$)` PPP conversion factor, GDP (L…¹</span></span>
-<span id="cb1-19"><a href="#cb1-19" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt; &lt;int&gt;          &lt;dbl&gt;               &lt;dbl&gt;                           &lt;dbl&gt;</span></span>
-<span id="cb1-20"><a href="#cb1-20" tabindex="-1"></a><span class="co">#&gt; 1 USA    2010           1                      1                               1</span></span>
-<span id="cb1-21"><a href="#cb1-21" tabindex="-1"></a><span class="co">#&gt; 2 USA    2011           1.02                   1                               1</span></span>
-<span id="cb1-22"><a href="#cb1-22" tabindex="-1"></a><span class="co">#&gt; 3 USA    2012           1.05                   1                               1</span></span>
-<span id="cb1-23"><a href="#cb1-23" tabindex="-1"></a><span class="co">#&gt; 4 USA    2013           1.08                   1                               1</span></span>
-<span id="cb1-24"><a href="#cb1-24" tabindex="-1"></a><span class="co">#&gt; 5 USA    2014           1.1                    1                               1</span></span>
-<span id="cb1-25"><a href="#cb1-25" tabindex="-1"></a><span class="co">#&gt; # ℹ abbreviated name: ¹​`PPP conversion factor, GDP (LCU per international $)`</span></span>
-<span id="cb1-26"><a href="#cb1-26" tabindex="-1"></a></span>
-<span id="cb1-27"><a href="#cb1-27" tabindex="-1"></a><span class="fu">convertGDP</span>(</span>
-<span id="cb1-28"><a href="#cb1-28" tabindex="-1"></a>  <span class="at">gdp =</span> my_gdp, </span>
-<span id="cb1-29"><a href="#cb1-29" tabindex="-1"></a>  <span class="at">unit_in =</span> <span class="st">&quot;constant 2010 LCU&quot;</span>, </span>
-<span id="cb1-30"><a href="#cb1-30" tabindex="-1"></a>  <span class="at">unit_out =</span> <span class="st">&quot;constant 2014 Int$PPP&quot;</span>,</span>
-<span id="cb1-31"><a href="#cb1-31" tabindex="-1"></a>  <span class="at">source =</span> my_custom_source,</span>
-<span id="cb1-32"><a href="#cb1-32" tabindex="-1"></a>  <span class="at">verbose =</span> <span class="cn">TRUE</span></span>
-<span id="cb1-33"><a href="#cb1-33" tabindex="-1"></a>)</span>
-<span id="cb1-34"><a href="#cb1-34" tabindex="-1"></a><span class="co">#&gt; ℹ Converting GDP with conversion factors from user_provided:</span></span>
-<span id="cb1-35"><a href="#cb1-35" tabindex="-1"></a><span class="co">#&gt; constant 2010 LCU → constant 2014 LCU</span></span>
-<span id="cb1-36"><a href="#cb1-36" tabindex="-1"></a><span class="co">#&gt; 2014 value of base 2010 GDP deflator in (constant 2014 LCU per constant 2010</span></span>
-<span id="cb1-37"><a href="#cb1-37" tabindex="-1"></a><span class="co">#&gt; LCU) used:</span></span>
-<span id="cb1-38"><a href="#cb1-38" tabindex="-1"></a><span class="co">#&gt; USA: 1.1</span></span>
-<span id="cb1-39"><a href="#cb1-39" tabindex="-1"></a><span class="co">#&gt; constant 2014 LCU → constant 2014 Int$PPP</span></span>
-<span id="cb1-40"><a href="#cb1-40" tabindex="-1"></a><span class="co">#&gt; 2014 PPP conversion factor in (LCU per international $) used:</span></span>
-<span id="cb1-41"><a href="#cb1-41" tabindex="-1"></a><span class="co">#&gt; USA: 1</span></span>
-<span id="cb1-42"><a href="#cb1-42" tabindex="-1"></a><span class="co">#&gt; # A tibble: 5 × 3</span></span>
-<span id="cb1-43"><a href="#cb1-43" tabindex="-1"></a><span class="co">#&gt;   iso3c  year value</span></span>
-<span id="cb1-44"><a href="#cb1-44" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt; &lt;int&gt; &lt;dbl&gt;</span></span>
-<span id="cb1-45"><a href="#cb1-45" tabindex="-1"></a><span class="co">#&gt; 1 USA    2010  110 </span></span>
-<span id="cb1-46"><a href="#cb1-46" tabindex="-1"></a><span class="co">#&gt; 2 USA    2011  111.</span></span>
-<span id="cb1-47"><a href="#cb1-47" tabindex="-1"></a><span class="co">#&gt; 3 USA    2012  112.</span></span>
-<span id="cb1-48"><a href="#cb1-48" tabindex="-1"></a><span class="co">#&gt; 4 USA    2013  113.</span></span>
-<span id="cb1-49"><a href="#cb1-49" tabindex="-1"></a><span class="co">#&gt; 5 USA    2014  114.</span></span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>my_custom_source <span class="ot">&lt;-</span> tibble<span class="sc">::</span><span class="fu">tibble</span>(</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>  <span class="at">iso3c =</span> <span class="st">&quot;USA&quot;</span>, </span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>  <span class="at">year =</span> <span class="dv">2010</span><span class="sc">:</span><span class="dv">2014</span>, </span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>  <span class="st">&quot;GDP deflator&quot;</span> <span class="ot">=</span> <span class="fu">seq</span>(<span class="dv">1</span>, <span class="fl">1.1</span>, <span class="fl">0.025</span>),</span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>  <span class="st">&quot;MER (LCU per US$)&quot;</span> <span class="ot">=</span> <span class="dv">1</span>,</span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>  <span class="st">&quot;PPP conversion factor, GDP (LCU per international $)&quot;</span> <span class="ot">=</span> <span class="dv">1</span>,</span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>)</span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a><span class="fu">print</span>(my_custom_source)</span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a><span class="co">#&gt; # A tibble: 5 × 5</span></span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a><span class="co">#&gt;   iso3c  year `GDP deflator` `MER (LCU per US$)` PPP conversion factor, GDP (L…¹</span></span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt; &lt;int&gt;          &lt;dbl&gt;               &lt;dbl&gt;                           &lt;dbl&gt;</span></span>
+<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a><span class="co">#&gt; 1 USA    2010           1                      1                               1</span></span>
+<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a><span class="co">#&gt; 2 USA    2011           1.02                   1                               1</span></span>
+<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a><span class="co">#&gt; 3 USA    2012           1.05                   1                               1</span></span>
+<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a><span class="co">#&gt; 4 USA    2013           1.08                   1                               1</span></span>
+<span id="cb4-16"><a href="#cb4-16" tabindex="-1"></a><span class="co">#&gt; 5 USA    2014           1.1                    1                               1</span></span>
+<span id="cb4-17"><a href="#cb4-17" tabindex="-1"></a><span class="co">#&gt; # ℹ abbreviated name: ¹​`PPP conversion factor, GDP (LCU per international $)`</span></span>
+<span id="cb4-18"><a href="#cb4-18" tabindex="-1"></a></span>
+<span id="cb4-19"><a href="#cb4-19" tabindex="-1"></a><span class="fu">convertGDP</span>(</span>
+<span id="cb4-20"><a href="#cb4-20" tabindex="-1"></a>  <span class="at">gdp =</span> my_gdp, </span>
+<span id="cb4-21"><a href="#cb4-21" tabindex="-1"></a>  <span class="at">unit_in =</span> <span class="st">&quot;constant 2010 LCU&quot;</span>, </span>
+<span id="cb4-22"><a href="#cb4-22" tabindex="-1"></a>  <span class="at">unit_out =</span> <span class="st">&quot;constant 2014 Int$PPP&quot;</span>,</span>
+<span id="cb4-23"><a href="#cb4-23" tabindex="-1"></a>  <span class="at">source =</span> my_custom_source,</span>
+<span id="cb4-24"><a href="#cb4-24" tabindex="-1"></a>  <span class="at">verbose =</span> <span class="cn">TRUE</span></span>
+<span id="cb4-25"><a href="#cb4-25" tabindex="-1"></a>)</span>
+<span id="cb4-26"><a href="#cb4-26" tabindex="-1"></a><span class="co">#&gt; ℹ Converting GDP with conversion factors from user_provided:</span></span>
+<span id="cb4-27"><a href="#cb4-27" tabindex="-1"></a><span class="co">#&gt; constant 2010 LCU → constant 2014 LCU</span></span>
+<span id="cb4-28"><a href="#cb4-28" tabindex="-1"></a><span class="co">#&gt; 2014 value of base 2010 GDP deflator in (constant 2014 LCU per constant 2010</span></span>
+<span id="cb4-29"><a href="#cb4-29" tabindex="-1"></a><span class="co">#&gt; LCU) used:</span></span>
+<span id="cb4-30"><a href="#cb4-30" tabindex="-1"></a><span class="co">#&gt; USA: 1.1</span></span>
+<span id="cb4-31"><a href="#cb4-31" tabindex="-1"></a><span class="co">#&gt; constant 2014 LCU → constant 2014 Int$PPP</span></span>
+<span id="cb4-32"><a href="#cb4-32" tabindex="-1"></a><span class="co">#&gt; 2014 PPP conversion factor in (LCU per international $) used:</span></span>
+<span id="cb4-33"><a href="#cb4-33" tabindex="-1"></a><span class="co">#&gt; USA: 1</span></span>
+<span id="cb4-34"><a href="#cb4-34" tabindex="-1"></a><span class="co">#&gt; # A tibble: 5 × 3</span></span>
+<span id="cb4-35"><a href="#cb4-35" tabindex="-1"></a><span class="co">#&gt;   iso3c  year value</span></span>
+<span id="cb4-36"><a href="#cb4-36" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt; &lt;int&gt; &lt;dbl&gt;</span></span>
+<span id="cb4-37"><a href="#cb4-37" tabindex="-1"></a><span class="co">#&gt; 1 USA    2010  110 </span></span>
+<span id="cb4-38"><a href="#cb4-38" tabindex="-1"></a><span class="co">#&gt; 2 USA    2011  111.</span></span>
+<span id="cb4-39"><a href="#cb4-39" tabindex="-1"></a><span class="co">#&gt; 3 USA    2012  112.</span></span>
+<span id="cb4-40"><a href="#cb4-40" tabindex="-1"></a><span class="co">#&gt; 4 USA    2013  113.</span></span>
+<span id="cb4-41"><a href="#cb4-41" tabindex="-1"></a><span class="co">#&gt; 5 USA    2014  114.</span></span></code></pre></div>
 </div>
-<div id="shipped-sources" class="section level2">
-<h2>Shipped ‘sources’</h2>
-<p>There are two <code>source</code> options shipped with the package,
-<code>wb_wdi</code> and <code>wb_wdi_linked</code>, <strong>with
-<code>wb_wdi</code> set as the default</strong>. Pass the name of a
-shipped source to the source argument to use it.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">convertGDP</span>(</span>
-<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>  <span class="at">gdp =</span> my_gdp, </span>
-<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>  <span class="at">unit_in =</span> <span class="st">&quot;constant 2010 LCU&quot;</span>, </span>
-<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>  <span class="at">unit_out =</span> <span class="st">&quot;constant 2014 Int$PPP&quot;</span>,</span>
-<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>  <span class="at">source =</span> <span class="st">&quot;wb_wdi_linked&quot;</span>,</span>
-<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>  <span class="at">verbose =</span> <span class="cn">TRUE</span></span>
-<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>)</span>
-<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a><span class="co">#&gt; ℹ Converting GDP with conversion factors from wb_wdi_linked:</span></span>
-<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a><span class="co">#&gt; constant 2010 LCU → constant 2014 LCU</span></span>
-<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a><span class="co">#&gt; 2014 value of base 2010 GDP deflator in (constant 2014 LCU per constant 2010</span></span>
-<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a><span class="co">#&gt; LCU) used:</span></span>
-<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a><span class="co">#&gt; USA: 1.07786</span></span>
-<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a><span class="co">#&gt; constant 2014 LCU → constant 2014 Int$PPP</span></span>
-<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a><span class="co">#&gt; 2014 PPP conversion factor in (LCU per international $) used:</span></span>
-<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a><span class="co">#&gt; USA: 1</span></span>
-<span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a><span class="co">#&gt; # A tibble: 5 × 3</span></span>
-<span id="cb2-17"><a href="#cb2-17" tabindex="-1"></a><span class="co">#&gt;   iso3c  year value</span></span>
-<span id="cb2-18"><a href="#cb2-18" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt; &lt;int&gt; &lt;dbl&gt;</span></span>
-<span id="cb2-19"><a href="#cb2-19" tabindex="-1"></a><span class="co">#&gt; 1 USA    2010  108.</span></span>
-<span id="cb2-20"><a href="#cb2-20" tabindex="-1"></a><span class="co">#&gt; 2 USA    2011  109.</span></span>
-<span id="cb2-21"><a href="#cb2-21" tabindex="-1"></a><span class="co">#&gt; 3 USA    2012  110.</span></span>
-<span id="cb2-22"><a href="#cb2-22" tabindex="-1"></a><span class="co">#&gt; 4 USA    2013  111.</span></span>
-<span id="cb2-23"><a href="#cb2-23" tabindex="-1"></a><span class="co">#&gt; 5 USA    2014  112.</span></span></code></pre></div>
-<p>Use the function <code>print_source_info</code> to print information
-on a specific, or all available sources.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">print_source_info</span>(<span class="st">&quot;wb_wdi&quot;</span>)</span>
-<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="co">#&gt; ── wb_wdi ──────────────────────────────────────────────────────────────────────</span></span>
-<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a><span class="co">#&gt; → Origin: The World Bank&#39;s World Development Indicator Database</span></span>
-<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="co">#&gt; → Date: Downloaded on the 30th of April 2024</span></span>
-<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="co">#&gt; → Html: https://databank.worldbank.org/source/world-development-indicators</span></span>
-<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a><span class="co">#&gt; → Note: Uses the GDP deflator.</span></span>
-<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="co">#&gt; ────────────────────────────────────────────────────────────────────────────────</span></span>
-<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a><span class="fu">print_source_info</span>()</span>
-<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a><span class="co">#&gt; ℹ Sources available:</span></span>
-<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a><span class="co">#&gt; ── wb_wdi ──────────────────────────────────────────────────────────────────────</span></span>
-<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a><span class="co">#&gt; → Origin: The World Bank&#39;s World Development Indicator Database</span></span>
-<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a><span class="co">#&gt; → Date: Downloaded on the 30th of April 2024</span></span>
-<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a><span class="co">#&gt; → Html: https://databank.worldbank.org/source/world-development-indicators</span></span>
-<span id="cb3-14"><a href="#cb3-14" tabindex="-1"></a><span class="co">#&gt; → Note: Uses the GDP deflator.</span></span>
-<span id="cb3-15"><a href="#cb3-15" tabindex="-1"></a><span class="co">#&gt; ────────────────────────────────────────────────────────────────────────────────</span></span>
-<span id="cb3-16"><a href="#cb3-16" tabindex="-1"></a><span class="co">#&gt; ── wb_wdi_linked ───────────────────────────────────────────────────────────────</span></span>
-<span id="cb3-17"><a href="#cb3-17" tabindex="-1"></a><span class="co">#&gt; → Origin: The World Bank&#39;s World Development Indicator Database</span></span>
-<span id="cb3-18"><a href="#cb3-18" tabindex="-1"></a><span class="co">#&gt; → Date: Downloaded on the 30th of April 2024</span></span>
-<span id="cb3-19"><a href="#cb3-19" tabindex="-1"></a><span class="co">#&gt; → Html: https://databank.worldbank.org/source/world-development-indicators</span></span>
-<span id="cb3-20"><a href="#cb3-20" tabindex="-1"></a><span class="co">#&gt; → Note: Uses the linked GDP deflator.</span></span>
-<span id="cb3-21"><a href="#cb3-21" tabindex="-1"></a><span class="co">#&gt; ────────────────────────────────────────────────────────────────────────────────</span></span>
-<span id="cb3-22"><a href="#cb3-22" tabindex="-1"></a><span class="co">#&gt; ── wb_wdi_cpi ──────────────────────────────────────────────────────────────────</span></span>
-<span id="cb3-23"><a href="#cb3-23" tabindex="-1"></a><span class="co">#&gt; → Origin: The World Bank&#39;s World Development Indicator Database</span></span>
-<span id="cb3-24"><a href="#cb3-24" tabindex="-1"></a><span class="co">#&gt; → Date: Downloaded on the 30th of April 2024</span></span>
-<span id="cb3-25"><a href="#cb3-25" tabindex="-1"></a><span class="co">#&gt; → Html: https://databank.worldbank.org/source/world-development-indicators</span></span>
-<span id="cb3-26"><a href="#cb3-26" tabindex="-1"></a><span class="co">#&gt; → Note: Uses the CPI as deflator.</span></span>
-<span id="cb3-27"><a href="#cb3-27" tabindex="-1"></a><span class="co">#&gt; ────────────────────────────────────────────────────────────────────────────────</span></span></code></pre></div>
-<p>Use the <code>:::</code> operator to take a closer look at sources
-shipped with GDPuc.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>GDPuc<span class="sc">:::</span>wb_wdi</span></code></pre></div>
+</div>
+<div id="the-use_usa_cf_for_all-argument" class="section level2">
+<h2>The <code>use_USA_cf_for_all</code> argument</h2>
+<p>In some cases it may be desirable to use the US conversion factors
+for all countries. For instance, when converting global scenario data
+from modelling efforts, in US$MER, to another base year. Setting the
+<code>use_USA_cf_for_all</code> to <code>TRUE</code> ensures that all
+countries are converted with the US conversion factors.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>my_gdp <span class="ot">&lt;-</span> tibble<span class="sc">::</span><span class="fu">tibble</span>(</span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>  <span class="at">iso3c =</span> <span class="fu">c</span>(<span class="st">&quot;USA&quot;</span>, <span class="st">&quot;IND&quot;</span>), </span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>  <span class="at">value =</span> <span class="dv">100</span></span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>)</span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a></span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a><span class="co"># Normal conversion, with country specific conversion factors</span></span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a><span class="fu">convertGDP</span>(</span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a>  <span class="at">gdp =</span> my_gdp, </span>
+<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a>  <span class="at">unit_in =</span> <span class="st">&quot;constant 2005 US$MER&quot;</span>, </span>
+<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a>  <span class="at">unit_out =</span> <span class="st">&quot;constant 2020 US$MER&quot;</span>,</span>
+<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a>  <span class="at">verbose =</span> <span class="cn">TRUE</span></span>
+<span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a>)</span>
+<span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a><span class="co">#&gt; ℹ Converting GDP with conversion factors from wb_wdi:</span></span>
+<span id="cb5-14"><a href="#cb5-14" tabindex="-1"></a><span class="co">#&gt; constant 2005 US$MER → constant 2005 LCU</span></span>
+<span id="cb5-15"><a href="#cb5-15" tabindex="-1"></a><span class="co">#&gt; 2005 MERs in (LCU per US$) used:</span></span>
+<span id="cb5-16"><a href="#cb5-16" tabindex="-1"></a><span class="co">#&gt; IND: 44.2736</span></span>
+<span id="cb5-17"><a href="#cb5-17" tabindex="-1"></a><span class="co">#&gt; USA: 1</span></span>
+<span id="cb5-18"><a href="#cb5-18" tabindex="-1"></a><span class="co">#&gt; constant 2005 LCU → constant 2020 LCU</span></span>
+<span id="cb5-19"><a href="#cb5-19" tabindex="-1"></a><span class="co">#&gt; 2020 value of base 2005 GDP deflators in (constant 2020 LCU per constant 2005</span></span>
+<span id="cb5-20"><a href="#cb5-20" tabindex="-1"></a><span class="co">#&gt; LCU) used:</span></span>
+<span id="cb5-21"><a href="#cb5-21" tabindex="-1"></a><span class="co">#&gt; IND: 2.35925</span></span>
+<span id="cb5-22"><a href="#cb5-22" tabindex="-1"></a><span class="co">#&gt; USA: 1.30033</span></span>
+<span id="cb5-23"><a href="#cb5-23" tabindex="-1"></a><span class="co">#&gt; constant 2020 LCU → constant 2020 US$MER</span></span>
+<span id="cb5-24"><a href="#cb5-24" tabindex="-1"></a><span class="co">#&gt; 2020 MERs in (LCU per US$) used:</span></span>
+<span id="cb5-25"><a href="#cb5-25" tabindex="-1"></a><span class="co">#&gt; IND: 74.225</span></span>
+<span id="cb5-26"><a href="#cb5-26" tabindex="-1"></a><span class="co">#&gt; USA: 1</span></span>
+<span id="cb5-27"><a href="#cb5-27" tabindex="-1"></a><span class="co">#&gt; # A tibble: 2 × 2</span></span>
+<span id="cb5-28"><a href="#cb5-28" tabindex="-1"></a><span class="co">#&gt;   iso3c value</span></span>
+<span id="cb5-29"><a href="#cb5-29" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt; &lt;dbl&gt;</span></span>
+<span id="cb5-30"><a href="#cb5-30" tabindex="-1"></a><span class="co">#&gt; 1 USA    130.</span></span>
+<span id="cb5-31"><a href="#cb5-31" tabindex="-1"></a><span class="co">#&gt; 2 IND    141.</span></span>
+<span id="cb5-32"><a href="#cb5-32" tabindex="-1"></a></span>
+<span id="cb5-33"><a href="#cb5-33" tabindex="-1"></a><span class="co"># Using the US conversion factors for both countries</span></span>
+<span id="cb5-34"><a href="#cb5-34" tabindex="-1"></a><span class="fu">convertGDP</span>(</span>
+<span id="cb5-35"><a href="#cb5-35" tabindex="-1"></a>  <span class="at">gdp =</span> my_gdp, </span>
+<span id="cb5-36"><a href="#cb5-36" tabindex="-1"></a>  <span class="at">unit_in =</span> <span class="st">&quot;constant 2005 US$MER&quot;</span>, </span>
+<span id="cb5-37"><a href="#cb5-37" tabindex="-1"></a>  <span class="at">unit_out =</span> <span class="st">&quot;constant 2020 US$MER&quot;</span>,</span>
+<span id="cb5-38"><a href="#cb5-38" tabindex="-1"></a>  <span class="at">use_USA_cf_for_all =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb5-39"><a href="#cb5-39" tabindex="-1"></a>  <span class="at">verbose =</span> <span class="cn">TRUE</span></span>
+<span id="cb5-40"><a href="#cb5-40" tabindex="-1"></a>)</span>
+<span id="cb5-41"><a href="#cb5-41" tabindex="-1"></a><span class="co">#&gt; ℹ Converting GDP with conversion factors from wb_wdi:</span></span>
+<span id="cb5-42"><a href="#cb5-42" tabindex="-1"></a><span class="co">#&gt; constant 2005 US$MER → constant 2005 LCU</span></span>
+<span id="cb5-43"><a href="#cb5-43" tabindex="-1"></a><span class="co">#&gt; 2005 MERs in (LCU per US$) used:</span></span>
+<span id="cb5-44"><a href="#cb5-44" tabindex="-1"></a><span class="co">#&gt; IND: 1</span></span>
+<span id="cb5-45"><a href="#cb5-45" tabindex="-1"></a><span class="co">#&gt; USA: 1</span></span>
+<span id="cb5-46"><a href="#cb5-46" tabindex="-1"></a><span class="co">#&gt; constant 2005 LCU → constant 2020 LCU</span></span>
+<span id="cb5-47"><a href="#cb5-47" tabindex="-1"></a><span class="co">#&gt; 2020 value of base 2005 GDP deflators in (constant 2020 LCU per constant 2005</span></span>
+<span id="cb5-48"><a href="#cb5-48" tabindex="-1"></a><span class="co">#&gt; LCU) used:</span></span>
+<span id="cb5-49"><a href="#cb5-49" tabindex="-1"></a><span class="co">#&gt; IND: 1.30033</span></span>
+<span id="cb5-50"><a href="#cb5-50" tabindex="-1"></a><span class="co">#&gt; USA: 1.30033</span></span>
+<span id="cb5-51"><a href="#cb5-51" tabindex="-1"></a><span class="co">#&gt; constant 2020 LCU → constant 2020 US$MER</span></span>
+<span id="cb5-52"><a href="#cb5-52" tabindex="-1"></a><span class="co">#&gt; 2020 MERs in (LCU per US$) used:</span></span>
+<span id="cb5-53"><a href="#cb5-53" tabindex="-1"></a><span class="co">#&gt; IND: 1</span></span>
+<span id="cb5-54"><a href="#cb5-54" tabindex="-1"></a><span class="co">#&gt; USA: 1</span></span>
+<span id="cb5-55"><a href="#cb5-55" tabindex="-1"></a><span class="co">#&gt; # A tibble: 2 × 2</span></span>
+<span id="cb5-56"><a href="#cb5-56" tabindex="-1"></a><span class="co">#&gt;   iso3c value</span></span>
+<span id="cb5-57"><a href="#cb5-57" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt; &lt;dbl&gt;</span></span>
+<span id="cb5-58"><a href="#cb5-58" tabindex="-1"></a><span class="co">#&gt; 1 USA    130.</span></span>
+<span id="cb5-59"><a href="#cb5-59" tabindex="-1"></a><span class="co">#&gt; 2 IND    130.</span></span></code></pre></div>
 </div>
 
 

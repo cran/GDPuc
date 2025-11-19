@@ -60,7 +60,7 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
 { counter-reset: source-line 0; }
@@ -545,17 +545,16 @@ misleading results, use with care!</strong></p>
 <span id="cb6-28"><a href="#cb6-28" tabindex="-1"></a><span class="co">#&gt; 5 VEN    2014 0.504</span></span>
 <span id="cb6-29"><a href="#cb6-29" tabindex="-1"></a></span>
 <span id="cb6-30"><a href="#cb6-30" tabindex="-1"></a>x<span class="sc">$</span>cfs</span>
-<span id="cb6-31"><a href="#cb6-31" tabindex="-1"></a><span class="co">#&gt; # A tibble: 1 × 4</span></span>
-<span id="cb6-32"><a href="#cb6-32" tabindex="-1"></a><span class="co">#&gt;   iso3c 2005 PPP conversion fact…¹ 2019 value of base 2…² 2019 PPP conversion …³</span></span>
-<span id="cb6-33"><a href="#cb6-33" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;                      &lt;dbl&gt;                  &lt;dbl&gt;                  &lt;dbl&gt;</span></span>
-<span id="cb6-34"><a href="#cb6-34" tabindex="-1"></a><span class="co">#&gt; 1 VEN                        0.842                   1.18                   205.</span></span>
+<span id="cb6-31"><a href="#cb6-31" tabindex="-1"></a><span class="co">#&gt; # A tibble: 1 × 3</span></span>
+<span id="cb6-32"><a href="#cb6-32" tabindex="-1"></a><span class="co">#&gt;   iso3c 2019 value of base 2005 GDP deflator in (consta…¹ 2019 PPP conversion …²</span></span>
+<span id="cb6-33"><a href="#cb6-33" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;                                             &lt;dbl&gt;                  &lt;dbl&gt;</span></span>
+<span id="cb6-34"><a href="#cb6-34" tabindex="-1"></a><span class="co">#&gt; 1 VEN                                                1.18                   205.</span></span>
 <span id="cb6-35"><a href="#cb6-35" tabindex="-1"></a><span class="co">#&gt; # ℹ abbreviated names:</span></span>
-<span id="cb6-36"><a href="#cb6-36" tabindex="-1"></a><span class="co">#&gt; #   ¹​`2005 PPP conversion factor in (LCU per international $)`,</span></span>
-<span id="cb6-37"><a href="#cb6-37" tabindex="-1"></a><span class="co">#&gt; #   ²​`2019 value of base 2005 GDP deflator in (constant 2019 LCU per constant 2005 LCU)`,</span></span>
-<span id="cb6-38"><a href="#cb6-38" tabindex="-1"></a><span class="co">#&gt; #   ³​`2019 PPP conversion factor in (LCU per international $)`</span></span>
-<span id="cb6-39"><a href="#cb6-39" tabindex="-1"></a></span>
-<span id="cb6-40"><a href="#cb6-40" tabindex="-1"></a><span class="co"># Compare the 2019 PPP with the 2005 PPP. They are not in the same order of magnitude. </span></span>
-<span id="cb6-41"><a href="#cb6-41" tabindex="-1"></a><span class="co"># Obviously, being a part of the same region, does not mean the currencies are of the same strength.</span></span></code></pre></div>
+<span id="cb6-36"><a href="#cb6-36" tabindex="-1"></a><span class="co">#&gt; #   ¹​`2019 value of base 2005 GDP deflator in (constant 2019 LCU per constant 2005 LCU)`,</span></span>
+<span id="cb6-37"><a href="#cb6-37" tabindex="-1"></a><span class="co">#&gt; #   ²​`2019 PPP conversion factor in (LCU per international $)`</span></span>
+<span id="cb6-38"><a href="#cb6-38" tabindex="-1"></a></span>
+<span id="cb6-39"><a href="#cb6-39" tabindex="-1"></a><span class="co"># Compare the 2019 PPP with the 2005 PPP. They are not in the same order of magnitude. </span></span>
+<span id="cb6-40"><a href="#cb6-40" tabindex="-1"></a><span class="co"># Obviously, being a part of the same region, does not mean the currencies are of the same strength.</span></span></code></pre></div>
 </div>
 <div id="replace_nas-clinear" class="section level3">
 <h3><code>replace_NAs</code> = c(“linear”, “…”)</h3>
@@ -592,62 +591,53 @@ missing conversion factors still lead to NAs, these are replaced with
 <span id="cb7-26"><a href="#cb7-26" tabindex="-1"></a><span class="co">#&gt; 2 XXX    2010    0</span></span>
 <span id="cb7-27"><a href="#cb7-27" tabindex="-1"></a></span>
 <span id="cb7-28"><a href="#cb7-28" tabindex="-1"></a>x<span class="sc">$</span>cfs</span>
-<span id="cb7-29"><a href="#cb7-29" tabindex="-1"></a><span class="co">#&gt; # A tibble: 2 × 4</span></span>
-<span id="cb7-30"><a href="#cb7-30" tabindex="-1"></a><span class="co">#&gt;   iso3c 2005 PPP conversion fact…¹ 2019 value of base 2…² 2019 PPP conversion …³</span></span>
-<span id="cb7-31"><a href="#cb7-31" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;                      &lt;dbl&gt;                  &lt;dbl&gt;                  &lt;dbl&gt;</span></span>
-<span id="cb7-32"><a href="#cb7-32" tabindex="-1"></a><span class="co">#&gt; 1 VEN                        0.842                   14.4                   5.97</span></span>
-<span id="cb7-33"><a href="#cb7-33" tabindex="-1"></a><span class="co">#&gt; 2 XXX                       NA                       NA                    NA   </span></span>
+<span id="cb7-29"><a href="#cb7-29" tabindex="-1"></a><span class="co">#&gt; # A tibble: 2 × 3</span></span>
+<span id="cb7-30"><a href="#cb7-30" tabindex="-1"></a><span class="co">#&gt;   iso3c 2019 value of base 2005 GDP deflators in (const…¹ 2019 PPP conversion …²</span></span>
+<span id="cb7-31"><a href="#cb7-31" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;                                             &lt;dbl&gt;                  &lt;dbl&gt;</span></span>
+<span id="cb7-32"><a href="#cb7-32" tabindex="-1"></a><span class="co">#&gt; 1 VEN                                                14.4                   5.97</span></span>
+<span id="cb7-33"><a href="#cb7-33" tabindex="-1"></a><span class="co">#&gt; 2 XXX                                                NA                    NA   </span></span>
 <span id="cb7-34"><a href="#cb7-34" tabindex="-1"></a><span class="co">#&gt; # ℹ abbreviated names:</span></span>
-<span id="cb7-35"><a href="#cb7-35" tabindex="-1"></a><span class="co">#&gt; #   ¹​`2005 PPP conversion factors in (LCU per international $)`,</span></span>
-<span id="cb7-36"><a href="#cb7-36" tabindex="-1"></a><span class="co">#&gt; #   ²​`2019 value of base 2005 GDP deflators in (constant 2019 LCU per constant 2005 LCU)`,</span></span>
-<span id="cb7-37"><a href="#cb7-37" tabindex="-1"></a><span class="co">#&gt; #   ³​`2019 PPP conversion factors in (LCU per international $)`</span></span></code></pre></div>
+<span id="cb7-35"><a href="#cb7-35" tabindex="-1"></a><span class="co">#&gt; #   ¹​`2019 value of base 2005 GDP deflators in (constant 2019 LCU per constant 2005 LCU)`,</span></span>
+<span id="cb7-36"><a href="#cb7-36" tabindex="-1"></a><span class="co">#&gt; #   ²​`2019 PPP conversion factors in (LCU per international $)`</span></span></code></pre></div>
 </div>
-<div id="deprecated-replace_nas-1" class="section level3">
-<h3>Deprecated: <code>replace_NAs</code> = 1</h3>
-<p>If set to <code>1</code>, missing conversion factors are set to 1.
-<strong>To be deprecated, use with care!</strong></p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a>my_gdp <span class="ot">&lt;-</span> tibble<span class="sc">::</span><span class="fu">tibble</span>(</span>
-<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>  <span class="at">iso3c =</span> <span class="st">&quot;VEN&quot;</span>,</span>
-<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>  <span class="at">year =</span> <span class="dv">2010</span><span class="sc">:</span><span class="dv">2014</span>,</span>
-<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>  <span class="at">value =</span> <span class="dv">100</span><span class="sc">:</span><span class="dv">104</span></span>
+<div id="replace_nas-with_usa" class="section level3">
+<h3><code>replace_NAs</code> = “with_USA”</h3>
+<p>If set to “with_USA”, missing conversion factors are extended using
+the growth rates of the USA. If that is not possible (for instance if
+there is no data for any years at all) the data for these countries is
+converted using the conversion factors of the USA.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="co"># Venezuela is only missing conversion factors in 2019, AIA has no conversion factors at all.</span></span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>my_gdp <span class="ot">&lt;-</span> tibble<span class="sc">::</span><span class="fu">tibble</span>(</span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>  <span class="at">iso3c =</span> <span class="fu">c</span>(<span class="st">&quot;VEN&quot;</span>, <span class="st">&quot;AIA&quot;</span>, <span class="st">&quot;USA&quot;</span>),</span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>  <span class="at">value =</span> <span class="dv">100</span></span>
 <span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a>)</span>
 <span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a></span>
 <span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">convertGDP</span>(</span>
 <span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a>  <span class="at">gdp =</span> my_gdp,</span>
 <span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a>  <span class="at">unit_in =</span> <span class="st">&quot;constant 2005 Int$PPP&quot;</span>,</span>
 <span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a>  <span class="at">unit_out =</span> <span class="st">&quot;constant 2019 Int$PPP&quot;</span>,</span>
-<span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a>  <span class="at">replace_NAs =</span> <span class="dv">1</span>,</span>
+<span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a>  <span class="at">replace_NAs =</span> <span class="st">&quot;with_USA&quot;</span>,</span>
 <span id="cb8-12"><a href="#cb8-12" tabindex="-1"></a>  <span class="at">return_cfs =</span> <span class="cn">TRUE</span></span>
 <span id="cb8-13"><a href="#cb8-13" tabindex="-1"></a>)</span>
-<span id="cb8-14"><a href="#cb8-14" tabindex="-1"></a><span class="co">#&gt; Warning: The `replace_NAs` argument of `convertGDP()` should not be 1 as of GDPuc 0.7.0.</span></span>
-<span id="cb8-15"><a href="#cb8-15" tabindex="-1"></a><span class="co">#&gt; ℹ The deprecated feature was likely used in the GDPuc package.</span></span>
-<span id="cb8-16"><a href="#cb8-16" tabindex="-1"></a><span class="co">#&gt;   Please report the issue at &lt;https://github.com/pik-piam/GDPuc/issues&gt;.</span></span>
-<span id="cb8-17"><a href="#cb8-17" tabindex="-1"></a><span class="co">#&gt; This warning is displayed once every 8 hours.</span></span>
-<span id="cb8-18"><a href="#cb8-18" tabindex="-1"></a><span class="co">#&gt; Call `lifecycle::last_lifecycle_warnings()` to see where this warning was</span></span>
-<span id="cb8-19"><a href="#cb8-19" tabindex="-1"></a><span class="co">#&gt; generated.</span></span>
-<span id="cb8-20"><a href="#cb8-20" tabindex="-1"></a>x<span class="sc">$</span>result</span>
-<span id="cb8-21"><a href="#cb8-21" tabindex="-1"></a><span class="co">#&gt; # A tibble: 5 × 3</span></span>
-<span id="cb8-22"><a href="#cb8-22" tabindex="-1"></a><span class="co">#&gt;   iso3c  year value</span></span>
-<span id="cb8-23"><a href="#cb8-23" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt; &lt;int&gt; &lt;dbl&gt;</span></span>
-<span id="cb8-24"><a href="#cb8-24" tabindex="-1"></a><span class="co">#&gt; 1 VEN    2010  12.9</span></span>
-<span id="cb8-25"><a href="#cb8-25" tabindex="-1"></a><span class="co">#&gt; 2 VEN    2011  13.0</span></span>
-<span id="cb8-26"><a href="#cb8-26" tabindex="-1"></a><span class="co">#&gt; 3 VEN    2012  13.1</span></span>
-<span id="cb8-27"><a href="#cb8-27" tabindex="-1"></a><span class="co">#&gt; 4 VEN    2013  13.3</span></span>
-<span id="cb8-28"><a href="#cb8-28" tabindex="-1"></a><span class="co">#&gt; 5 VEN    2014  13.4</span></span>
-<span id="cb8-29"><a href="#cb8-29" tabindex="-1"></a></span>
-<span id="cb8-30"><a href="#cb8-30" tabindex="-1"></a>x<span class="sc">$</span>cfs</span>
-<span id="cb8-31"><a href="#cb8-31" tabindex="-1"></a><span class="co">#&gt; # A tibble: 1 × 4</span></span>
-<span id="cb8-32"><a href="#cb8-32" tabindex="-1"></a><span class="co">#&gt;   iso3c 2005 PPP conversion fact…¹ 2019 value of base 2…² 2019 PPP conversion …³</span></span>
-<span id="cb8-33"><a href="#cb8-33" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;                      &lt;dbl&gt;                  &lt;dbl&gt;                  &lt;dbl&gt;</span></span>
-<span id="cb8-34"><a href="#cb8-34" tabindex="-1"></a><span class="co">#&gt; 1 VEN                        0.842                  0.153                      1</span></span>
-<span id="cb8-35"><a href="#cb8-35" tabindex="-1"></a><span class="co">#&gt; # ℹ abbreviated names:</span></span>
-<span id="cb8-36"><a href="#cb8-36" tabindex="-1"></a><span class="co">#&gt; #   ¹​`2005 PPP conversion factor in (LCU per international $)`,</span></span>
-<span id="cb8-37"><a href="#cb8-37" tabindex="-1"></a><span class="co">#&gt; #   ²​`2019 value of base 2005 GDP deflator in (constant 2019 LCU per constant 2005 LCU)`,</span></span>
-<span id="cb8-38"><a href="#cb8-38" tabindex="-1"></a><span class="co">#&gt; #   ³​`2019 PPP conversion factor in (LCU per international $)`</span></span>
-<span id="cb8-39"><a href="#cb8-39" tabindex="-1"></a></span>
-<span id="cb8-40"><a href="#cb8-40" tabindex="-1"></a><span class="co"># Why is the deflator above not 1? That is because for VEN, only the deflator value in 2019 was set to 1. </span></span>
-<span id="cb8-41"><a href="#cb8-41" tabindex="-1"></a><span class="co"># In 2005 the deflator was in the order of magnitude of 100. Obviously setting the deflator to 1 in 2019 is </span></span>
-<span id="cb8-42"><a href="#cb8-42" tabindex="-1"></a><span class="co"># completely misleading.</span></span></code></pre></div>
+<span id="cb8-14"><a href="#cb8-14" tabindex="-1"></a>x<span class="sc">$</span>result</span>
+<span id="cb8-15"><a href="#cb8-15" tabindex="-1"></a><span class="co">#&gt; # A tibble: 3 × 2</span></span>
+<span id="cb8-16"><a href="#cb8-16" tabindex="-1"></a><span class="co">#&gt;   iso3c value</span></span>
+<span id="cb8-17"><a href="#cb8-17" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt; &lt;dbl&gt;</span></span>
+<span id="cb8-18"><a href="#cb8-18" tabindex="-1"></a><span class="co">#&gt; 1 VEN    264.</span></span>
+<span id="cb8-19"><a href="#cb8-19" tabindex="-1"></a><span class="co">#&gt; 2 AIA    128.</span></span>
+<span id="cb8-20"><a href="#cb8-20" tabindex="-1"></a><span class="co">#&gt; 3 USA    128.</span></span>
+<span id="cb8-21"><a href="#cb8-21" tabindex="-1"></a></span>
+<span id="cb8-22"><a href="#cb8-22" tabindex="-1"></a>x<span class="sc">$</span>cfs</span>
+<span id="cb8-23"><a href="#cb8-23" tabindex="-1"></a><span class="co">#&gt; # A tibble: 3 × 4</span></span>
+<span id="cb8-24"><a href="#cb8-24" tabindex="-1"></a><span class="co">#&gt;   iso3c 2005 PPP conversion fact…¹ 2019 value of base 2…² 2019 PPP conversion …³</span></span>
+<span id="cb8-25"><a href="#cb8-25" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;                      &lt;dbl&gt;                  &lt;dbl&gt;                  &lt;dbl&gt;</span></span>
+<span id="cb8-26"><a href="#cb8-26" tabindex="-1"></a><span class="co">#&gt; 1 USA                        1                       1.28                   1   </span></span>
+<span id="cb8-27"><a href="#cb8-27" tabindex="-1"></a><span class="co">#&gt; 2 VEN                        0.842                   8.40                   2.68</span></span>
+<span id="cb8-28"><a href="#cb8-28" tabindex="-1"></a><span class="co">#&gt; 3 AIA                        1                       1.28                   1   </span></span>
+<span id="cb8-29"><a href="#cb8-29" tabindex="-1"></a><span class="co">#&gt; # ℹ abbreviated names:</span></span>
+<span id="cb8-30"><a href="#cb8-30" tabindex="-1"></a><span class="co">#&gt; #   ¹​`2005 PPP conversion factors in (LCU per international $)`,</span></span>
+<span id="cb8-31"><a href="#cb8-31" tabindex="-1"></a><span class="co">#&gt; #   ²​`2019 value of base 2005 GDP deflators in (constant 2019 LCU per constant 2005 LCU)`,</span></span>
+<span id="cb8-32"><a href="#cb8-32" tabindex="-1"></a><span class="co">#&gt; #   ³​`2019 PPP conversion factors in (LCU per international $)`</span></span></code></pre></div>
 </div>
 </div>
 

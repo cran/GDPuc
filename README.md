@@ -9,8 +9,6 @@
 status](https://www.r-pkg.org/badges/version/GDPuc)](https://CRAN.R-project.org/package=GDPuc)
 [![check](https://github.com/pik-piam/GDPuc/actions/workflows/check.yaml/badge.svg)](https://github.com/pik-piam/GDPuc/actions/workflows/check.yaml)
 [![codecov](https://codecov.io/gh/pik-piam/GDPuc/branch/main/graph/badge.svg?token=3GHXFQXARX)](https://app.codecov.io/gh/pik-piam/GDPuc)
-![Lifecycle:
-stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)
 <!-- badges: end -->
 
 GDPuc (a.k.a. the GDP unit-converter) provides a simple function to
@@ -152,3 +150,10 @@ convertSingle(
 
 - convert regional GDP data (see [“Converting regional GDP
   data”](https://pik-piam.github.io/GDPuc/articles/with_regions.html))
+
+## Madrat wrappers
+
+When using GDPuc functions within the madrat ecosystem, it is
+recommended to use the wrappers starting with `tool`,
+i.e. `GDPuc::toolConvertGDP()` and `GDPuc::toolConvertSingle()`, for the
+madrat caching to work and include the GDPuc function.

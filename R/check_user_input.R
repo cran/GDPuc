@@ -6,20 +6,23 @@ check_user_input <- function(gdp,
                              unit_in,
                              unit_out,
                              source,
-                             use_USA_deflator_for_all,
+                             use_USA_cf_for_all,
                              with_regions,
                              replace_NAs,
                              verbose,
-                             return_cfs) {
+                             return_cfs,
+                             iso3c_column,
+                             year_column) {
 
   check_gdp(gdp)
   check_unit_in_out(unit_in, unit_out)
   source <- check_source(source)
-  check_use_USA_deflator_for_all(use_USA_deflator_for_all, unit_in, unit_out)
+  check_use_USA_cf_for_all(use_USA_cf_for_all, unit_in, unit_out)
   check_with_regions(unit_in, unit_out, source, with_regions)
   check_replace_NAs(with_regions, replace_NAs)
   check_verbose(verbose)
   check_return_cfs(return_cfs)
+  check_custom_column_names(iso3c_column, year_column)
 
   TRUE
 }
@@ -47,13 +50,16 @@ check_gdp <- function(gdp) {
 # Check input parameters 'unit_in' and 'unit_out'
 check_unit_in_out <- function(unit_in, unit_out) {
   valid_units <- c(
-    "current LCU",
-    "current US\\$MER",
-    "current Int\\$PPP",
-    "constant .... LCU",
-    "constant .... US\\$MER",
-    "constant .... \u20ac",
-    "constant .... Int\\$PPP"
+    "^current LCU$",
+    "^current US\\$MER$",
+    "^current Int\\$PPP$",
+    "^current ..._CU$",
+    "^constant .... LCU$",
+    "^constant .... US\\$MER$",
+    "^constant .... \u20ac$",
+    "^constant .... EUR$",
+    "^constant .... Int\\$PPP$",
+    "^constant .... ..._CU$"
   )
   if (!is.character(unit_in) || !any(sapply(valid_units, grepl, unit_in))) {
     abort("Invalid 'unit_in' argument.")
@@ -96,30 +102,35 @@ check_source <- function(source) {
 }
 
 # Check input parameter 'verbose'
-check_use_USA_deflator_for_all <- function(use_USA_deflator_for_all, unit_in, unit_out) {
-  if (!is.logical(use_USA_deflator_for_all)) {
-    abort("Invalid 'use_USA_deflator_for_all' argument. Has to be either TRUE or FALSE.")
-  }
-  if (use_USA_deflator_for_all && any(grepl("current", c(unit_in, unit_out)))) {
-    abort("Setting 'use_USA_deflator_for_all' to TRUE should only be applied between conversion of constant units.")
+check_use_USA_cf_for_all <- function(use_USA_cf_for_all, unit_in, unit_out) {
+  if (!is.logical(use_USA_cf_for_all)) {
+    abort("Invalid 'use_USA_cf_for_all' argument. Has to be either TRUE or FALSE.")
   }
 }
 
 # Check input parameter 'with_regions'
 check_with_regions <- function(unit_in, unit_out, source, with_regions) {
-  if (!is.null(with_regions)) {
-    if (!is.data.frame(with_regions) || length(with_regions) != 2) {
-      abort("Invalid 'with_regions' argument. Has to be either 'NULL', or a data.frame of length 2.")
+  if (is.null(with_regions)) {
+    return()
+  }
+  if (!is.character(with_regions) && !is.data.frame(with_regions)) {
+    abort("Invalid 'with_regions' argument. Has to be either a string, or a data.frame.")
+  }
+  if (is.character(with_regions)) {
+    # Check for madrat package
+    rlang::check_installed("madrat", reason = "in order for madrat regionmappings to be found.")
+    if (!file.exists(madrat::toolGetMapping(with_regions, returnPathOnly = TRUE, error.missing = FALSE))) {
+      abort("Invalid 'with_regions' argument. Unknown regionmapping.")
     }
-    if (!all(c("iso3c", "region") %in% colnames(with_regions))) {
-      abort("Invalid 'with_regions' argument. Needs to have columns 'iso3c' and 'region'.")
-    }
-    if (grepl("LCU", unit_in) || grepl("LCU", unit_out)) {
-      abort("'LCU' GDP units are not compatible with regional aggregation.")
-    }
-    if (!any(grepl("GDP, PPP \\(constant .... international \\$\\)", colnames(source)))) {
-      abort("Incompatible source. Source requires a column of type 'GDP, PPP (constant YYYY international $)'")
-    }
+  }
+  if (is.data.frame(with_regions) && !all(c("iso3c", "region") %in% colnames(with_regions))) {
+    abort("Invalid 'with_regions' argument. Needs to have columns 'iso3c' and 'region'.")
+  }
+  if (grepl("LCU", unit_in) || grepl("LCU", unit_out)) {
+    abort("'LCU' GDP units are not compatible with regional aggregation.")
+  }
+  if (!any(grepl("GDP, PPP \\(constant .... international \\$\\)", colnames(source)))) {
+    abort("Incompatible source. Source requires a column of type 'GDP, PPP (constant YYYY international $)'")
   }
 }
 
@@ -127,17 +138,8 @@ check_with_regions <- function(unit_in, unit_out, source, with_regions) {
 # Check input parameter 'replace_NAs'
 check_replace_NAs <- function(with_regions, replace_NAs) {
   if (!is.null(replace_NAs)) {
-    if (setequal(replace_NAs, 1)) {
-      lifecycle::deprecate_warn("0.7.0", "convertGDP(replace_NAs = 'should not be 1')")
-    }
-    if ("linear_regional_average" %in% replace_NAs) {
-      lifecycle::deprecate_stop(
-        "0.8.0",
-        "convertGDP(replace_NAs = '\"linear_regional_average\" has been replaced by c(\"linear\", \"regional_average\")')"
-      )
-    }
-    if (!all(replace_NAs %in% c(NA, 0, 1, "no_conversion", "linear", "regional_average", "with_USA"))) {
-      abort("Invalid 'replace_NAs' argument. Has to be either NULL, NA, 0, 1, no_conversion, linear, \\
+    if (!all(replace_NAs %in% c(NA, 0, "no_conversion", "linear", "regional_average", "with_USA"))) {
+      abort("Invalid 'replace_NAs' argument. Has to be either NULL, NA, 0, no_conversion, linear, \\
             regional_average, with_USA or a combination of the above.")
     }
     if (length(replace_NAs) > 1 && replace_NAs[1] != "linear") {
@@ -161,5 +163,14 @@ check_verbose <- function(verbose) {
 check_return_cfs <- function(return_cfs) {
   if (!is.logical(return_cfs)) {
     abort("Invalid 'return_cfs' argument. Has to be either TRUE or FALSE.")
+  }
+}
+
+check_custom_column_names <- function (iso3c_column, year_column) {
+  if (!is.character(iso3c_column)) {
+    abort("Invalid 'iso3c_column' argument. Has to be a string.")
+  }
+  if (!is.character(year_column)) {
+    abort("Invalid 'year_column' argument. Has to be a string.")
   }
 }

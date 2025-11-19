@@ -1,7 +1,8 @@
 ## ----include = FALSE----------------------------------------------------------
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  eval = rlang::is_installed("madrat")
 )
 
 ## -----------------------------------------------------------------------------
@@ -24,5 +25,18 @@ convertGDP(
   unit_out = "constant 2017 Int$PPP",
   with_regions = my_mapping_data_frame,
   verbose = TRUE
+)
+
+## -----------------------------------------------------------------------------
+my_gdp <- tibble::tibble(
+  iso3c = "EUR", 
+  value = 100
+)
+
+convertGDP(
+  gdp = my_gdp, 
+  unit_in = "constant 2005 Int$PPP", 
+  unit_out = "constant 2017 Int$PPP",
+  with_regions = "regionmappingH12.csv"
 )
 

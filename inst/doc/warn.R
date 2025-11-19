@@ -5,5 +5,5 @@ knitr::opts_chunk$set(
 )
 
 ## ----eval=FALSE---------------------------------------------------------------
-#  options(GDPuc.warn = FALSE)
+# options(GDPuc.warn = FALSE)
 

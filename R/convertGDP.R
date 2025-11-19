@@ -1,8 +1,6 @@
 #' Convert GDP data
 #'
 #' @description
-#' `r lifecycle::badge("stable")`
-#'
 #' convertGDP() converts GDP time series data from one unit to another, using GDP
 #' deflators, market exchange rates (MERs) and purchasing power parity
 #' conversion factors (PPPs).
@@ -39,7 +37,8 @@
 #'     \item "constant YYYY LCU"
 #'     \item "constant YYYY Int$PPP"
 #'     \item "constant YYYY US$MER"
-#'     \item "constant YYYY €"
+#'     \item "constant YYYY €" or "constant YYYY EUR"
+#'     \item "constant YYYY xxx_CU"
 #'   }
 #'   where YYYY should be replaced with a year e.g. "2010" or "2017".
 #' @param unit_out A string with the outgoing GDP unit, one of:
@@ -50,22 +49,29 @@
 #'     \item "constant YYYY LCU"
 #'     \item "constant YYYY Int$PPP"
 #'     \item "constant YYYY US$MER"
-#'     \item "constant YYYY €"
+#'     \item "constant YYYY €" or "constant YYYY EUR"
+#'     \item "constant YYYY xxx_CU"
 #'   }
-#'   where YYYY should be replaced with a year e.g. "2010" or "2017".
+#'   where YYYY should be replaced with a year e.g. "2010" or "2017", and xxx with a valid iso3c country code,
+#'   e.g. "JPN_CU" to pick the currency unit of Japan.
+#'
 #' @param source A string referring to a package internal data frame containing the conversion factors, or
 #'   a data-frame that exists in the calling environment.
 #'   Use [print_source_info()](https://pik-piam.github.io/GDPuc/reference/print_source_info.html)
 #'   to learn about the available sources.
-#' @param use_USA_deflator_for_all TRUE or FALSE (default). If TRUE, then only the USA deflator is used to adjust for
-#'   inflation, regardless of the country codes provided. This is a very specific deviation from the correct conversion
-#'   process, which nevertheless is often used in the integrated assessment community. Use carefully!
-#' @param with_regions NULL or a data-frame. The data-frame should be "country to region
-#'   mapping": one column named "iso3c" with iso3c country codes, and one column named
-#'   "region" with region codes to which the countries belong. Any regions in the gdp
-#'   object will then be disaggregated according to the region mapping and weighed by the
-#'   GDP share of countries in that region in the year of the unit, converted on a country
-#'   level, and re-aggregated before being returned.
+#' @param use_USA_cf_for_all TRUE or FALSE (default). If TRUE, then the USA conversion factors are used for all
+#'   countries.
+#' @param with_regions  NULL by default, meaning no regional codons are recognized. To convert regional data, a
+#' "country to region mapping" must be passed to the function. Any regions will then be disaggregated according to the
+#' region mapping and weighed by the GDP share of countries in that region in the year of the unit (only constant units
+#' are compatible with with_regions not equal NULL), converted on a country level, and re-aggregated before being
+#' returned. Can be set to one of the following:
+#'   \itemize{
+#'     \item A character string referring to a madrat regionmapping. Requires madrat to be installed, and the mapping
+#'     to be accessible via `madrat::toolGetMapping()`.
+#'     \item A data-frame with a country to region mapping: one column named "iso3c" with iso3c country codes,
+#'     and one column named "region" with region codes to which the countries belong.
+#'   }
 #' @param replace_NAs NULL by default, meaning no NA replacement. Can be set to one of the following:
 #'   \itemize{
 #'     \item 0: resulting NAs are simply replaced with 0.
@@ -76,8 +82,10 @@
 #'     \item "regional_average": missing conversion factors in the source object are replaced with
 #'     the regional average of the region to which the country belongs. This requires a region-mapping to
 #'     be passed to the function, see the with_regions argument.
-#'     \item "with_USA": missing conversion factors in the source object are replaced with
-#'     the conversion factors of the USA.
+#'     \item "with_USA": missing conversion factors in the source object are extended using US growth rates. If that
+#'     is not possible (for instance if the conversion factor is missing entirely) the conversion factors are replaced
+#'     with US ones. For example, if the conversion requires PPPs and deflators, but the PPPs are missing entirely,
+#'     then even though there is deflator data, it is the the US deflator that is used.
 #'   }
 #'   Can also be a vector with "linear" as first element, e.g. c("linear", 0) or c("linear", "no_conversion"),
 #'   in which case, the operations are done in sequence.
@@ -86,6 +94,8 @@
 #' @param return_cfs TRUE or FALSE. Set to TRUE to additionally return a tibble with the conversion factors
 #'   used. In that case a list is returned with the converted GDP under "result", and the conversion factors
 #'   used under "cfs".
+#' @param iso3c_column String designating the name of the column containing the iso3c codes. Defaults to "iso3c".
+#' @param year_column String designating the name of the column containing the years. Defaults to "year".
 #' @return The gdp argument, with the values in the "value" column, converted to unit_out. If the argument
 #'   return_cfs is TRUE, then a list is returned with the converted GDP under "result", and the conversion
 #'   factors used under "cfs".
@@ -104,11 +114,18 @@ convertGDP <- function(gdp,
                        unit_in,
                        unit_out,
                        source = "wb_wdi",
-                       use_USA_deflator_for_all = FALSE,
+                       use_USA_cf_for_all = FALSE,
                        with_regions = NULL,
                        replace_NAs = NULL,
                        verbose = getOption("GDPuc.verbose", default = FALSE),
-                       return_cfs = FALSE) {
+                       return_cfs = FALSE,
+                       iso3c_column = "iso3c",
+                       year_column = "year") {
+  # The following line needs to be updated every time the output of convertGDP is affected by an update!
+  # This is a trick, so that madrat caching works correctly. For more information, see the documentation of the madrat
+  # R-package.
+  "last changes 2025-11-19"
+
   # Save all function arguments as list
   arg <- as.list(environment())
 
@@ -125,22 +142,27 @@ convertGDP <- function(gdp,
   }
 
   # Transform user input for internal use, while performing some last consistency checks
-  internal <- transform_user_input(gdp, unit_in, unit_out, source, use_USA_deflator_for_all, with_regions, replace_NAs)
+  internal <- transform_user_input(gdp,
+                                   unit_in,
+                                   unit_out,
+                                   source,
+                                   use_USA_cf_for_all,
+                                   with_regions,
+                                   replace_NAs,
+                                   iso3c_column,
+                                   year_column)
+
+  # Get appropriate function
+  f <- paste0(internal$unit_in, "_2_", internal$unit_out)
 
   # Avoid NOTE in package check for CRAN
   . <- NULL
-  # Get appropriate function
-  f <- paste0(internal$unit_in, "_2_", internal$unit_out) %>%
-    gsub(" ", "_", .) %>%
-    gsub("_YYYY", "", .) %>%
-    gsub("\\$", "", .) %>%
-    # \u20ac is the ascii code for the € sign
-    gsub("\u20ac", "EURO", .)
-
   # Get list of function arguments
   a <- list("gdp" = internal$gdp, "source" = internal$source) %>%
-    {if ("base_x" %in% names(internal)) c(., "base_x" = internal$base_x) else .} %>%
-    {if ("base_y" %in% names(internal)) c(., "base_y" = internal$base_y) else .}
+    {if (!rlang::is_empty(internal$iso3c_x)) c(., "iso3c_x" = internal$iso3c_x) else .} %>%
+    {if (!rlang::is_empty(internal$iso3c_y)) c(., "iso3c_y" = internal$iso3c_y) else .} %>%
+    {if (!is.null(internal$base_x)) c(., "base_x" = internal$base_x) else .} %>%
+    {if (!is.null(internal$base_y)) c(., "base_y" = internal$base_y) else .}
 
   # At least one explicit call to a crayon:: function is required to avoid CRAN note.
   h <- crayon::blue(internal$source_name)
@@ -162,7 +184,7 @@ convertGDP <- function(gdp,
   }
 
   # Return with original type and names
-  x <- transform_internal(x, gdp, with_regions, internal$require_year_column)
+  x <- transform_internal(x, gdp, with_regions, internal$require_year_column, iso3c_column, year_column)
 
   if (return_cfs) {
     return(list("result" = x, "cfs" = do.call(get_conversion_factors, arg[1:7])))
@@ -185,7 +207,10 @@ convertGDP <- function(gdp,
 #'              unit_out = "constant 2015 Int$PPP")
 #'
 #' @export
-convertCPI <- function(...) convertGDP(..., source = "wb_wdi_cpi")
+convertCPI <- function(...) {
+  "!# @monitor GDPuc::convertGDP"
+  convertGDP(..., source = "wb_wdi_cpi")
+}
 
 #' @describeIn convertGDP Convert a single value, while specifying iso3c code and year. Simpler than creating a
 #'   single row tibble.
@@ -200,18 +225,60 @@ convertCPI <- function(...) convertGDP(..., source = "wb_wdi_cpi")
 #'                 unit_in = "current LCU",
 #'                 unit_out = "constant 2015 Int$PPP")
 #' @export
-convertSingle <- function(x, iso3c, year = NULL, ...) {
+convertSingle <- function(x, iso3c, year = NULL, unit_in, unit_out, ...) {
+  "!# @monitor GDPuc::convertGDP"
   tib <- tibble::tibble("iso3c" = iso3c, "value" = x)
 
   if (!is.null(year)) {
     tib <- tibble::add_column(tib, "year" = year, .before = "value")
   }
 
-  tib_c <- convertGDP(gdp = tib, ...)
+  tib_c <- convertGDP(gdp = tib, unit_in, unit_out, ...)
 
   if (tibble::is_tibble(tib_c)) {
     return(tib_c$value)
   } else {
     return(tib_c)
   }
+}
+
+#' @describeIn convertGDP Madrat wrapper around `convertGDP()`
+#' @export
+toolConvertGDP <- function(gdp,
+                           unit_in,
+                           unit_out,
+                           source = "wb_wdi",
+                           use_USA_cf_for_all = FALSE,
+                           with_regions = NULL,
+                           replace_NAs = NULL,
+                           verbose = getOption("GDPuc.verbose", default = FALSE),
+                           return_cfs = FALSE,
+                           iso3c_column = "iso3c",
+                           year_column = "year") {
+  "!# @monitor GDPuc::convertGDP"
+  convertGDP(gdp,
+             unit_in,
+             unit_out,
+             source,
+             use_USA_cf_for_all,
+             with_regions,
+             replace_NAs,
+             verbose,
+             return_cfs,
+             iso3c_column,
+             year_column)
+}
+
+#' @describeIn convertGDP Madrat wrapper around `convertSingle()`
+#' @export
+toolConvertSingle <- function(x, iso3c, year = NULL, unit_in, unit_out, ...) {
+  "!# @monitor GDPuc::convertSingle"
+  convertSingle(x, iso3c, year, unit_in, unit_out, ...)
+}
+
+#' @describeIn convertGDP Madrat wrapper around `convertCPI(...)`
+#' @export
+toolConvertCPI <- function(...) {
+  "!# @monitor GDPuc::convertCPI"
+  convertCPI(...)
 }
